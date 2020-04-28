@@ -1,58 +1,92 @@
-#pragma config FOSC = INTRC_NOCLKOUT
-#pragma config WDTE = OFF
-#pragma config PWRTE = OFF
-#pragma config MCLRE = OFF
-#pragma config CP = OFF
-#pragma config CPD = OFF
-#pragma config BOREN = OFF
-#pragma config IESO = ON
-#pragma config FCMEN = ON
-#pragma config LVP = OFF
-#pragma config BOR4V = BOR40V
-#pragma config WRT = OFF 
+#include<xc.h>
+#include"DISPLAY7SEG.h"
 
-#include <xc.h>
-#include "DISPLAY7SEG.h"
+void ConmutarDigito(){ //ESTA FUNCION MUESTRA LOS NUMEROS EN LOS DIGITOS Y PRENDE Y APAGA LOS TRANSISTORES.
+ unsigned char t2, i; 
+ long t1, load=0111111;
+ switch(DigitoOn) 
+ { 
+  case 0: 
+   load=D1; //En load se guarda el numero a mostrar por el digito encendido.
+   BJT1=1; 
+   BJT2=0;  //Enciende un digito y apaga los demas.
+   BJT3=0; 
+   DigitoOn=1; //Se cambia la variable para que la siguiente vez pase por otro case del switch, encendiendo otro digito.
+   break; 
+  case 1: 
+   load=D2; 
+   BJT1=0; 
+   BJT2=1; 
+   BJT3=0; 
+   DigitoOn=2; 
+   break; 
+  case 2: 
+   load=D3;
+   BJT1=0; 
+   BJT2=0; 
+   BJT3=1; 
+   DigitoOn=0; 
+   break; 
+ } 
+ t1=load;
+ for(i=8;i>0;i--) //Carga de datos del registro de desplazamiento.
+ { 
+    t2=t1%10;
+    t1=t1/10;
+    DATA=t2%10; 
+    CLOCK=1; 
+    CLOCK=0; 
+ } 
+ STROBE=1; //Paso de datos del registro a los digitos.
+ STROBE=0; 
+}
 
-#define P1 PORTAbits.RA0
-#define P2 PORTAbits.RA1
-#define DATA PORTBbits.RB7
-#define CLOCK PORTBbits.RB6
-#define STROBE PORTBbits.RB5
-
-void main(void) {
-    unsigned int valor=0, temp=0;
-    TRISA=0x03;
-    TRISB=0x00;
-    TRISC=0x00;
-    ANSEL=0b00000000;
-    OPTION_REG=0x02;
-    while(1)
-    {
-        if(T0IF==1)
-        {
-            TMR0=TMR0+131;
-            T0IF=0;
-            temp++;
-        }
-        if(temp==6)
-        {
-            ConmutarDigito();
-            temp=0;
-        }
-        if(P1==1)
-        {
-            if(valor!=999)valor=valor+1;
-            else valor=0;
-            MostrarDisplay(valor);
-        }
-        else if(P2==1)
-        {
-            if(valor!=0)valor=valor-1;
-            else valor=999;
-            MostrarDisplay(valor);
-        }
-    }
-
-
+void MostrarDisplay(unsigned int valor) //ESTA FUNCION DIVIDE EN CEN, DEC Y UNI VALOR ASIGNADO POR EL USUARIO Y LO CONVIERTE EN CODIGOS PARA USAR EN EL REGISTRO DE DESPLAZAMIENTO.
+{ 
+ unsigned char cen, dec, uni; 
+ cen=valor/100; 
+ dec=(valor/10)%10; //Separacion entre centena, descena y unidad.
+ uni=(valor%10); 
+ D1=Codificar(cen); 
+ D2=Codificar(dec);  //Codificacion de numero a codigo para el registro.
+ D3=Codificar(uni); 
+} 
+unsigned char Codificar(unsigned char x) 
+{ 
+  long caca; //En esta variable se guarda el codigo, se usa una LONG ya que no entra el numero en una INT.
+ 
+ switch(x) 
+ { 
+  case 0: 
+   caca=0111111; 
+   break; 
+  case 1: 
+   caca=0000110; 
+   break; 
+  case 2: 
+   caca=1011011; 
+   break; 
+  case 3: 
+   caca=1001111; 
+   break; 
+  case 4: 
+   caca=1100110; 
+   break; 
+  case 5: 
+   caca=1101101; 
+   break; 
+  case 6: 
+   caca=1111101; 
+   break; 
+  case 7: 
+   caca=0000111; 
+   break; 
+  case 8: 
+   caca=1111111; 
+   break; 
+  case 9: 
+   caca=1100111; 
+   break; 
+ } 
+ return caca; 
 }

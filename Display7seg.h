@@ -1,7 +1,6 @@
 #ifndef DISPLAY7SEG_H
-#define    DISPLAY7SEG_H
+#define DISPLAY7SEG_H
 
-#include <xc.h> 
 void ConmutarDigito(void);
 void MostrarDisplay(unsigned int valor);
 unsigned char Codificar(unsigned char x);
