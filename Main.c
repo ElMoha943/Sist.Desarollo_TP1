@@ -25,7 +25,7 @@ void main(void) {
     TRISA=0x03;
     TRISB=0x00;
     TRISC=0x03;
-    //ANSEL=0b00000000; //Configura entradas en digital.
+    ANSEL=0b00000000; //Configura entradas en digital.
     OPTION_REG=0x02;
     while(1)
     {
@@ -51,7 +51,7 @@ void main(void) {
             else valor=999;
             MostrarDisplay(valor); //Actualiza el valor a mostrar por los digitos.
         }
-        else
+        else if(P1==0&&P2==0)
         {
             PP=0;
         }
