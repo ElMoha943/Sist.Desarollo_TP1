@@ -14,18 +14,18 @@
 #include <xc.h>
 #include "DISPLAY7SEG.h"
 
-#define P1 PORTAbits.RA0
-#define P2 PORTAbits.RA1
+#define P1 PORTCbits.RC0
+#define P2 PORTCbits.RC1
 #define DATA PORTBbits.RB7
 #define CLOCK PORTBbits.RB6
 #define STROBE PORTBbits.RB5
 
 void main(void) {
-    int valor=0, temp=0;
+    int valor=0, PP=0;
     TRISA=0x03;
     TRISB=0x00;
-    TRISC=0x00;
-    ANSEL=0b00000000; //Configura entradas en digital.
+    TRISC=0x03;
+    //ANSEL=0b00000000; //Configura entradas en digital.
     OPTION_REG=0x02;
     while(1)
     {
@@ -34,25 +34,26 @@ void main(void) {
         {
             TMR0=TMR0+131;
             T0IF=0;
-            temp++;
-        }
-        if(temp==6)
-        {
-            ConmutarDigito(); //Conmuta los digitos.
-            temp=0;
+            ConmutarDigito();
         }
         //Pulsadores
-        if(P1==1)
+        if(P1==1&&PP==0)
         {
+            PP=1; //Anti rebote
             if(valor!=999)valor=valor+1;
             else valor=0;
             MostrarDisplay(valor); //Actualiza el valor a mostrar por los digitos.
         }
-        else if(P2==1)
+        else if(P2==1&&PP==0)
         {
+            PP=1;
             if(valor!=0)valor=valor-1;
             else valor=999;
             MostrarDisplay(valor); //Actualiza el valor a mostrar por los digitos.
+        }
+        else
+        {
+            PP=0;
         }
     }
 }

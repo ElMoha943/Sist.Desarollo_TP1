@@ -2,8 +2,8 @@
 #include"DISPLAY7SEG.h"
 
 void ConmutarDigito(){ //ESTA FUNCION MUESTRA LOS NUMEROS EN LOS DIGITOS Y PRENDE Y APAGA LOS TRANSISTORES.
- unsigned char t2, i; 
- long t1, load=0111111;
+ unsigned char i; 
+ long t1, load=11111100;
  switch(DigitoOn) 
  { 
   case 0: 
@@ -31,19 +31,18 @@ void ConmutarDigito(){ //ESTA FUNCION MUESTRA LOS NUMEROS EN LOS DIGITOS Y PREND
  t1=load;
  for(i=8;i>0;i--) //Carga de datos del registro de desplazamiento.
  { 
-    t2=t1%10;
+    DATA=t1%10;
     t1=t1/10;
-    DATA=t2%10; 
     CLOCK=1; 
     CLOCK=0; 
  } 
  STROBE=1; //Paso de datos del registro a los digitos.
- STROBE=0; 
+ STROBE=0;
 }
 
-void MostrarDisplay(unsigned int valor) //ESTA FUNCION DIVIDE EN CEN, DEC Y UNI VALOR ASIGNADO POR EL USUARIO Y LO CONVIERTE EN CODIGOS PARA USAR EN EL REGISTRO DE DESPLAZAMIENTO.
+void MostrarDisplay(int valor) //ESTA FUNCION DIVIDE EN CEN, DEC Y UNI VALOR ASIGNADO POR EL USUARIO Y LO CONVIERTE EN CODIGOS PARA USAR EN EL REGISTRO DE DESPLAZAMIENTO.
 { 
- unsigned char cen, dec, uni; 
+ int cen, dec, uni; 
  cen=valor/100; 
  dec=(valor/10)%10; //Separacion entre centena, descena y unidad.
  uni=(valor%10); 
@@ -51,41 +50,41 @@ void MostrarDisplay(unsigned int valor) //ESTA FUNCION DIVIDE EN CEN, DEC Y UNI 
  D2=Codificar(dec);  //Codificacion de numero a codigo para el registro.
  D3=Codificar(uni); 
 } 
-unsigned char Codificar(unsigned char x) 
+long Codificar(int x) 
 { 
   long caca; //En esta variable se guarda el codigo, se usa una LONG ya que no entra el numero en una INT.
  
  switch(x) 
  { 
   case 0: 
-   caca=0111111; 
+   caca=11111100; 
    break; 
   case 1: 
-   caca=0000110; 
+   caca=00001100; 
    break; 
   case 2: 
-   caca=1011011; 
+   caca=10110110; 
    break; 
   case 3: 
-   caca=1001111; 
+   caca=10011110; 
    break; 
   case 4: 
-   caca=1100110; 
+   caca=11001100; 
    break; 
   case 5: 
-   caca=1101101; 
+   caca=11011010; 
    break; 
   case 6: 
-   caca=1111101; 
+   caca=11111010; 
    break; 
   case 7: 
-   caca=0000111; 
+   caca=00001110; 
    break; 
   case 8: 
-   caca=1111111; 
+   caca=11111110; 
    break; 
   case 9: 
-   caca=1100111; 
+   caca=11001110; 
    break; 
  } 
  return caca; 

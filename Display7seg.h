@@ -2,9 +2,9 @@
 #define DISPLAY7SEG_H
 
 void ConmutarDigito(void);
-void MostrarDisplay(unsigned int valor);
-unsigned char Codificar(unsigned char x);
-long D1=0111111, D2=0111111, D3=0111111; 
+void MostrarDisplay(int valor);
+long Codificar(int x);
+long D1=11111100, D2=11111100, D3=11111100; 
 unsigned int DigitoOn=0;
 #define DATA PORTBbits.RB7
 #define CLOCK PORTBbits.RB6
